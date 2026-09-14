@@ -1,13 +1,20 @@
 using UnityEngine;
 
 /// <summary>
-/// Put on the basketball. Respawns it at spawnPoint if it falls below resetYThreshold
-/// (e.g. off the edge of the court) and isn't currently being held.
+/// Put on the basketball. Respawns it at spawnPoint either automatically (if it falls below
+/// resetYThreshold) or on demand when a hand presses the index trigger (see VRHandGrabber).
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(GrabbableObject))]
 public class BallReset : MonoBehaviour
 {
+    /// <summary>
+    /// Simple single-ball lookup so any hand's trigger press can find "the" ball to reset.
+    /// Fine for a single-basketball scene; if you ever add multiple balls, swap this for
+    /// a per-ball reference passed in some other way.
+    /// </summary>
+    public static BallReset Instance { get; private set; }
+
     public Transform spawnPoint;
     public float resetYThreshold = -5f;
 
@@ -18,6 +25,12 @@ public class BallReset : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         grabbable = GetComponent<GrabbableObject>();
+        Instance = this;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     void Update()
@@ -30,14 +43,18 @@ public class BallReset : MonoBehaviour
         }
     }
 
-    [ContextMenu("Reset Ball")]
     public void ResetBall()
     {
+        // Drop out of whichever hand is holding it (if any) first, so it doesn't just
+        // get dragged straight back to the hand on the next FollowHand call.
+        if (grabbable.IsGrabbed)
+        {
+            grabbable.ForceDrop();
+        }
+
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         transform.position = spawnPoint.position;
         transform.rotation = spawnPoint.rotation;
-
-        Debug.Log("Ball reset to spawn point: " + spawnPoint.name + " at " + spawnPoint.position);
     }
 }
