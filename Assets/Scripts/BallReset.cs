@@ -30,6 +30,7 @@ public class BallReset : MonoBehaviour
         }
     }
 
+    [ContextMenu("Reset Ball")]
     public void ResetBall()
     {
         rb.linearVelocity = Vector3.zero;
