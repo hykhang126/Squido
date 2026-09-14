@@ -37,5 +37,7 @@ public class BallReset : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         transform.position = spawnPoint.position;
         transform.rotation = spawnPoint.rotation;
+
+        Debug.Log("Ball reset to spawn point: " + spawnPoint.name + " at " + spawnPoint.position);
     }
 }
