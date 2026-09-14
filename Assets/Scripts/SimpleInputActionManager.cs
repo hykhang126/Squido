@@ -6,7 +6,6 @@ using UnityEngine;
 /// <summary>
 /// Copy from Unity's InputActionManager, but without the XR Interaction Toolkit dependency.
 /// </summary>
-[AddComponentMenu("Input/Input Action Manager")]
 public class SimpleInputActionManager : MonoBehaviour
 {
     [SerializeField]
